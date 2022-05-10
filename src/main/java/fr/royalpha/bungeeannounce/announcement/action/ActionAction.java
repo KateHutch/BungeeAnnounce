@@ -2,6 +2,7 @@ package fr.royalpha.bungeeannounce.announcement.action;
 
 import fr.royalpha.bungeeannounce.handler.AnnounceAction;
 import net.md_5.bungee.api.ChatMessageType;
+import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 
@@ -11,7 +12,7 @@ import net.md_5.bungee.api.connection.ProxiedPlayer;
 public class ActionAction implements AnnounceAction {
 
 	@Override
-	public void onAction(ProxiedPlayer player, TextComponent message, Integer... optionalTitleArgs) {
+	public void onAction(ProxiedPlayer player, BaseComponent[] message, Integer... optionalTitleArgs) {
 		player.sendMessage(ChatMessageType.ACTION_BAR, message);
 	}
 

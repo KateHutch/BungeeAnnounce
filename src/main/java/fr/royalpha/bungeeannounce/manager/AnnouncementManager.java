@@ -15,6 +15,7 @@ import fr.royalpha.bungeeannounce.announcement.title.TitleAction;
 import fr.royalpha.bungeeannounce.announcement.warn.WarnAction;
 import fr.royalpha.bungeeannounce.announcement.warn.WarnCommand;
 import net.md_5.bungee.api.CommandSender;
+import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.config.ServerInfo;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
@@ -63,7 +64,7 @@ public enum AnnouncementManager {
 	 * @param message Message of the announcement.
 	 * @param optionalTitleArgs Optional title arguments. Put three integers and they will be used for fadeIn, stay and fadeOut values.
 	 */
-	public void send(ProxiedPlayer player, TextComponent message, Integer... optionalTitleArgs) {
+	public void send(ProxiedPlayer player, BaseComponent[] message, Integer... optionalTitleArgs) {
 		this.action.onAction(player, message, optionalTitleArgs);
 	}
 
@@ -111,16 +112,27 @@ public enum AnnouncementManager {
 			for (ProxiedPlayer receiver : BungeeAnnouncePlugin.getProxyServer().getPlayers()) {
 				if ((!permission.equals("") && !receiver.hasPermission(permission)) || receiver.getServer() == null || receiver.getServer().getInfo() == null) 
 					continue;
-				message = BAUtils.translatePlaceholders(message, sender, receiver, player);
-				announcement.send(receiver, BAUtils.parse((prefix ? announcement.getFieldPrefix().getString() : "") + message), optionalTitleArgs);
+
+				String[] split = message.split("ln");
+				for (String s : split) {
+					s = BAUtils.translatePlaceholders(message, sender, receiver, player);
+					s = BAUtils.getCenteredMessage(s);
+					announcement.send(receiver, BAUtils.parseNew(s), optionalTitleArgs);
+				}
+
 			}
 		} else {
 			for (ServerInfo server : servers) {
 				for (ProxiedPlayer receiver : server.getPlayers()) {
 					if (!permission.equals("") && !receiver.hasPermission(permission)) 
 						continue;
-					message = BAUtils.translatePlaceholders(message, sender, receiver, player);
-					announcement.send(receiver, BAUtils.parse((prefix ? announcement.getFieldPrefix().getString() : "") + message), optionalTitleArgs);
+
+					String[] split = message.split("ln");
+					for (String s : split) {
+						s = BAUtils.translatePlaceholders(message, sender, receiver, player);
+						s = BAUtils.getCenteredMessage(s);
+						announcement.send(receiver, BAUtils.parseNew(s), optionalTitleArgs);
+					}
 				}
 			}
 		}
@@ -141,7 +153,7 @@ public enum AnnouncementManager {
 	public static void sendToPlayer(AnnouncementManager announcement, CommandSender sender, ProxiedPlayer pplayer, String message, boolean prefix, Integer... optionalTitleArgs) {
 		if (pplayer.isConnected() && pplayer.getServer() != null && pplayer.getServer().getInfo() != null) {
 			message = BAUtils.translatePlaceholders(message, sender, pplayer, null);
-			announcement.send(pplayer, BAUtils.parse((prefix ? ConfigManager.Field.ANNOUNCE_PREFIX.getString() : "") + message), optionalTitleArgs);
+			announcement.send(pplayer, BAUtils.parseNew((prefix ? ConfigManager.Field.ANNOUNCE_PREFIX.getString() : "") + message), optionalTitleArgs);
 		}
 	}
 	
@@ -160,7 +172,7 @@ public enum AnnouncementManager {
 		ProxiedPlayer pplayer = BungeeAnnouncePlugin.getProxyServer().getPlayer(player);
 		if (pplayer.isConnected() && pplayer.getServer() != null && pplayer.getServer().getInfo() != null) {
 			message = BAUtils.translatePlaceholders(message, sender, pplayer, null);
-			announcement.send(pplayer, BAUtils.parse((prefix ? ConfigManager.Field.ANNOUNCE_PREFIX.getString() : "") + message), optionalTitleArgs);
+			announcement.send(pplayer, BAUtils.parseNew((prefix ? ConfigManager.Field.ANNOUNCE_PREFIX.getString() : "") + message), optionalTitleArgs);
 		}
 	}
 }
